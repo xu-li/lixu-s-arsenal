@@ -22,7 +22,7 @@ if (!function_exists('curl_version')) {
  * echo $sender->getLastResponseBody();
  * </code>
  */
-class RequestSender
+class HttpRequestSender
 {
     const METHOD_GET  = "GET";
     const METHOD_POST = "POST";
@@ -59,6 +59,10 @@ class RequestSender
         if (isset($options["cookie"])) {
             $this->useCookie($options["cookie"]);
         }
+
+        if (isset($options["user-agent"])) {
+            $this->setUserAgent($options["user-agent"]);
+        }
     }
 
     /**
@@ -78,6 +82,21 @@ class RequestSender
 
         $this->curlOptions[CURLOPT_COOKIEJAR] = $file;
         $this->curlOptions[CURLOPT_COOKIEFILE] = $file;
+    }
+
+    public function setUserAgent($ua) {
+        $prefix = "/^User-Agent/";
+        if (!preg_match($prefix, $ua)) {
+            $ua = "User-Agent: " . $ua;
+        }
+
+        foreach ($this->defaultHeaders as $idx => $header) {
+            if (preg_match($prefix, $header)) {
+                array_splice($this->defaultHeaders, $idx, 1);
+            }
+        }
+
+        $this->defaultHeaders[] = $ua;
     }
 
     /**

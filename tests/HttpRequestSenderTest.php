@@ -6,13 +6,14 @@ class HttpRequestSenderTest extends PHPUnit_Framework_TestCase
 
     public function testGetUsingArray() {
         $sender = new HttpRequestSender();
-        $url = self::URL_HTTP_BIN . "get";
+        $url = self::URL_HTTP_BIN . "get?test=1";
         $params = array("x" => 1, "y" => 2);
         $sender->get($url, $params);
 
         $response = json_decode($sender->getLastResponseBody(), true);
         $response_params = $response['args'];
 
+        $params["test"] = 1;
         $this->assertEquals($response_params, $params);
     }
 
